@@ -1,0 +1,133 @@
+@import './variables.scss';
+@import './mixins.scss';
+@import './_theme.scss';
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md;
+  
+  @include responsive(mobile) {
+    padding: $spacing-sm;
+  }
+}
+
+.chat-container {
+  width: 100%;
+  max-width: 800px;
+  height: 600px;
+  @include flex-column;
+  
+  @include responsive(mobile) {
+    height: calc(100vh - 120px);
+    border-radius: 0;
+  }
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-md;
+  background-color: $background-gray;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $background-gray;
+    border-radius: $border-radius-sm;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $primary-color;
+    border-radius: $border-radius-sm;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: $primary-dark;
+  }
+}
+
+.message {
+  @include chat-bubble;
+  
+  &.user {
+    background-color: $primary-color;
+    color: $text-light;
+    padding: $spacing-sm $spacing-md;
+    
+    @include responsive(mobile) {
+      max-width: 85%;
+    }
+  }
+  
+  &.bot {
+    background-color: $background-white;
+    color: $text-primary;
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid $background-gray;
+    
+    @include responsive(mobile) {
+      max-width: 85%;
+    }
+  }
+}
+
+.chat-input {
+  @include flex-between;
+  padding: $spacing-md;
+  border-top: 1px solid $background-gray;
+  gap: $spacing-sm;
+  
+  @include responsive(mobile) {
+    padding: $spacing-sm;
+  }
+}
+
+.typing {
+  @include text-truncate;
+  animation: pulse 1.5s $transition-normal infinite;
+  color: $text-secondary;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
+.message-enter {
+  animation: slideIn $transition-normal ease-out;
+}
+
+.message-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.message-exit {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.message-exit-active {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+@include responsive(mobile) {
+  .chat-messages {
+    padding: $spacing-sm;
+  }
+  
+  .message {
+    padding: $spacing-xs $spacing-sm;
+    font-size: 0.875rem;
+  }
+  
+  .chat-input {
+    padding: $spacing-sm;
+  }
+}
