@@ -3,8 +3,7 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import SocketService from '../../services/socketService';
-import { getMessageHistory } from '../../services/chatService';
+import { getMessageHistory, sendMessage } from '../../api/chatService';
 import { Message as MessageType } from '../../types';
 
 
@@ -15,14 +14,8 @@ const useChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  
-  const socketService = SocketService.getInstance();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-  const appendMessage = (message: MessageType) => {
-    setMessages(previousMessages => [...previousMessages, message]);
-  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -35,66 +28,39 @@ const useChatInterface = () => {
   useEffect(() => {
     let isMounted = true;
 
-    const handleWelcome = (data: any) => {
-      appendMessage({
-        text: data.message,
-        sender: 'bot'
-      });
-    };
-
-    const handleMessage = (data: any) => {
-      appendMessage({
-        text: data.text,
-        sender: data.sender,
-        timestamp: new Date(data.timestamp)
-      });
-    };
-
-    const handleBotResponse = (data: any) => {
-      appendMessage({
-        text: data.message,
-        sender: 'bot'
-      });
-      setIsLoading(false);
-    };
-
-    const handleError = (error: any) => {
-      setError(error.message || 'An error occurred');
-      setIsLoading(false);
-    };
-
     const initializeChat = async () => {
       try {
         const history = await getMessageHistory();
 
         if (isMounted) {
-          setMessages(history);
+          setMessages(
+            history.length > 0
+              ? history
+              : [{ text: 'Welcome to the chat! How can I help you today?', sender: 'bot' }]
+          );
         }
       } catch (historyError) {
         console.error('Unable to load message history:', historyError);
+
+        if (isMounted) {
+          setMessages([{ text: 'Welcome to the chat! How can I help you today?', sender: 'bot' }]);
+        }
       }
-
-      socketService.connect();
-
-      socketService.onWelcome(handleWelcome);
-      socketService.onMessage(handleMessage);
-      socketService.onBotResponse(handleBotResponse);
-      socketService.onError(handleError);
     };
 
     void initializeChat();
 
     return () => {
       isMounted = false;
-      socketService.disconnect();
     };
-  }, [ socketService ]);
+  }, []);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
+    const messageText = inputMessage.trim();
     const userMessage: MessageType = { 
-      text: inputMessage.trim(), 
+      text: messageText, 
       sender: 'user' 
     };
     
@@ -103,7 +69,19 @@ const useChatInterface = () => {
     setIsLoading(true);
     setError(null);
 
-    socketService.sendMessage(inputMessage.trim());
+    try {
+      const botResponse = await sendMessage(messageText);
+
+      setMessages(prev => [...prev, {
+        text: botResponse,
+        sender: 'bot'
+      }]);
+    } catch (sendError) {
+      console.error('Unable to send message:', sendError);
+      setError('Unable to send message');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

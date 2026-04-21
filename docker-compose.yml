@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: chatbot-api
-    command: npm run dev
+    command: corepack pnpm --filter chatbot-backend run dev
     volumes:
       - .:/app
       - /app/node_modules
@@ -20,12 +20,12 @@ services:
 
   chatbot-web:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     container_name: chatbot-web
-    command: npm start
+    command: corepack pnpm --filter chatbot-frontend start
     volumes:
-      - ./frontend:/app
+      - .:/app
       - /app/node_modules
     environment:
       PORT: 3000

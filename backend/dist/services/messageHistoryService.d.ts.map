@@ -1,0 +1,1 @@
+{"version":3,"file":"messageHistoryService.d.ts","sourceRoot":"","sources":["../../src/services/messageHistoryService.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,OAAO,EAAE,MAAM,eAAe,CAAC;AAExC,qBAAa,qBAAqB;IACnB,WAAW,CAAC,OAAO,EAAE,OAAO,GAAG,OAAO,CAAC,IAAI,CAAC;IAI5C,iBAAiB,CAAC,KAAK,SAAM,GAAG,OAAO,CAAC,OAAO,EAAE,CAAC;CAahE"}
