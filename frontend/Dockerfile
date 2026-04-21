@@ -4,14 +4,12 @@ WORKDIR /app
 
 ENV HOST=0.0.0.0
 
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
-COPY frontend/package.json ./frontend/package.json
-COPY packages/shared/package.json ./packages/shared/package.json
+COPY package.json package-lock.json ./
 
-RUN corepack enable && corepack pnpm install --frozen-lockfile
+RUN npm install --include=dev
 
 COPY . .
 
 EXPOSE 3000
 
-CMD ["corepack", "pnpm", "--filter", "chatbot-frontend", "start"]
+CMD ["npm", "start"]

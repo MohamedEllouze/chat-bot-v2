@@ -2,11 +2,9 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
-COPY backend/package.json ./backend/package.json
-COPY packages/shared/package.json ./packages/shared/package.json
+COPY package.json package-lock.json ./
 
-RUN corepack enable && corepack pnpm install --frozen-lockfile
+RUN npm install --include=dev
 
 COPY . .
 
@@ -14,4 +12,4 @@ ENV PORT=3001
 
 EXPOSE 3001
 
-CMD ["corepack", "pnpm", "--filter", "chatbot-backend", "run", "dev"]
+CMD ["npm", "run", "dev"]
