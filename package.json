@@ -1,0 +1,11 @@
+{
+  "name": "chatbot",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "build": "corepack pnpm -r --sort run build",
+    "build:shared": "corepack pnpm --filter @chatbot/shared run build",
+    "build:backend": "corepack pnpm --filter chatbot-backend run build",
+    "build:frontend": "corepack pnpm --filter chatbot-frontend run build"
+  }
+}

@@ -1,0 +1,43 @@
+services:
+  chatbot-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chatbot-api
+    command: corepack pnpm --filter chatbot-backend run dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    environment:
+      PORT: 3001
+      MONGODB_URI: ${MONGODB_URI}
+    ports:
+      - '3001:3001'
+    networks:
+      - chatbot
+
+  chatbot-web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: chatbot-web
+    command: corepack pnpm --filter chatbot-frontend start
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      PORT: 3000
+      HOST: 0.0.0.0
+      REACT_APP_API_URL: http://localhost:3001
+    ports:
+      - '3000:3000'
+    depends_on:
+      - chatbot-api
+    networks:
+      - chatbot
+
+networks:
+  chatbot:
+    driver: bridge
